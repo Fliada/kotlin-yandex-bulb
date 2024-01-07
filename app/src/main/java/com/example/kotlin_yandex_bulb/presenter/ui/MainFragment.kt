@@ -9,10 +9,17 @@ import androidx.viewbinding.ViewBinding
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.kotlin_yandex_bulb.R
 import com.example.kotlin_yandex_bulb.databinding.FragmentMainBinding
+import com.example.kotlin_yandex_bulb.di.DaggerAppComponent
 
 class MainFragment : Fragment() {
 
     private val binding: FragmentMainBinding by viewBinding()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val component = DaggerAppComponent
+            .create()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
