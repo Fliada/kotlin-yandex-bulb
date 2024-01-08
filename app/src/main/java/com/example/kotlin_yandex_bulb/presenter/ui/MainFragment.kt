@@ -1,9 +1,12 @@
 package com.example.kotlin_yandex_bulb.presenter.ui
 
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.kotlin_yandex_bulb.R
 import com.example.kotlin_yandex_bulb.databinding.FragmentMainBinding
@@ -20,6 +23,24 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel: MainViewModel by viewModels() { viewModelFactory }
+
+    private val adapter = MainAdapter()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initRecycler()
+        addSampleData()
+    }
+
+    private fun addSampleData() {
+        val data = (0..20).map { "Item #$it" }
+        adapter.submitList(data)
+    }
+
+    private fun initRecycler() = with(binding.mainRecycler) {
+        layoutManager = LinearLayoutManager(requireContext())
+        adapter = this@MainFragment.adapter
+    }
 
     override fun onAttach(context: Context) {
         context.appComponent.inject(this)
