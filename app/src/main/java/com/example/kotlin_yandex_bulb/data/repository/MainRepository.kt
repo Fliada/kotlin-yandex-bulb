@@ -4,5 +4,6 @@ import com.example.kotlin_yandex_bulb.data.ColorData
 
 interface MainRepository {
     suspend fun getColors(): Result<List<ColorData>?>
+    suspend fun setColor(color: String): Result<Unit>
 }
 

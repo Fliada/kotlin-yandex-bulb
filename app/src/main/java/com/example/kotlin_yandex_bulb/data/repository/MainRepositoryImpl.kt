@@ -27,4 +27,24 @@ class MainRepositoryImpl @Inject constructor(
             }
         )
     }
+
+    override suspend fun setColor(color: String): Result<Unit> {
+        kotlin.runCatching {
+            Log.d("MainRepositoryImpl", color)
+            service.setColor(color)
+        }.fold(
+            onSuccess = {
+                Log.d("MainRepositoryImpl", "${it.isSuccessful}")
+
+                return if (it.isSuccessful)
+                    Result.success(Unit)
+                else Result.failure(HttpException(it))
+            },
+            onFailure = {
+                Log.d("MainRepositoryImpl", "${it.stackTrace[1]}")
+
+                return Result.failure(it)
+            }
+        )
+    }
 }

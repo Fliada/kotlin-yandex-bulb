@@ -4,6 +4,9 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,10 +17,11 @@ import com.example.kotlin_yandex_bulb.data.ColorData
 import com.example.kotlin_yandex_bulb.databinding.FragmentMainBinding
 import com.example.kotlin_yandex_bulb.di.ViewModelFactory
 import com.example.kotlin_yandex_bulb.di.appComponent
+import com.example.kotlin_yandex_bulb.presenter.SliderSelectionListener
 import com.example.kotlin_yandex_bulb.presenter.vm.MainViewModel
 import javax.inject.Inject
 
-class MainFragment : Fragment(R.layout.fragment_main) {
+class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<List<ColorData>> {
 
     private val binding: FragmentMainBinding by viewBinding()
 
@@ -28,6 +32,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     private val adapter = MainAdapter()
 
+    private val colorSpinner: Spinner by lazy { binding.colorSpinner }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecycler()
@@ -35,6 +41,33 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             onDataReceived(it)
         }
         viewModel.loadData()
+    }
+
+    override fun setupColorSpinner(colors: List<ColorData>) {
+        val colorNames = colors.map { it.color }
+
+        // Создание адаптера для Spinner
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, colorNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        // Установка адаптера для Spinner
+        colorSpinner.adapter = adapter
+
+        // Установка слушателя для обработки выбора пользователя
+        colorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // Обработка выбора цвета
+                val selectedColor = colors[position]
+                // Ваш код для обработки выбора цвета
+                Log.d("MainFragment", "Selected color: ${selectedColor.name}")
+
+                viewModel.setColor(selectedColor.color)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Действие при отсутствии выбора
+            }
+        }
     }
 
     private fun onDataReceived(colorsCategories: UiState<List<ColorData>?>?) {
@@ -45,7 +78,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 binding.errorImage.visibility = View.GONE
                 binding.errorTitle.visibility = View.GONE
                 binding.errorSubtitle.visibility = View.GONE
-                colorsCategories.value?.let { adapter.submitList(it) }
+                colorsCategories.value?.let {colorList ->
+                    setupColorSpinner(colorList)
+                    adapter.submitList(colorList)
+                }
             }
             is UiState.Failure -> {
                 binding.mainRecycler.visibility = View.GONE
