@@ -6,19 +6,43 @@
     android:layout_height="match_parent"
     tools:context=".presenter.ui.MainFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/main_recycler"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Spinner
-        android:id="@+id/color_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <!-- Иконка лампочки -->
+        <ImageView
+            android:id="@+id/lamp_icon"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_bulb"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Spinner -->
+        <Spinner
+            android:id="@+id/color_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:layout_constraintTop_toBottomOf="@id/lamp_icon"/>
+
+        <!-- Регулировка яркости с помощью SeekBar -->
+        <SeekBar
+            android:id="@+id/brightness_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:layout_constraintTop_toBottomOf="@id/color_spinner"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
         android:id="@+id/sample_progress"

@@ -36,7 +36,6 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initRecycler()
         viewModel.liveData.observe(viewLifecycleOwner) {
             onDataReceived(it)
         }
@@ -73,18 +72,17 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
     private fun onDataReceived(colorsCategories: UiState<List<ColorData>?>?) {
         when(colorsCategories) {
             is UiState.Success -> {
-                binding.mainRecycler.visibility = View.VISIBLE
+                binding.container.visibility = View.VISIBLE
                 binding.sampleProgress.visibility = View.GONE
                 binding.errorImage.visibility = View.GONE
                 binding.errorTitle.visibility = View.GONE
                 binding.errorSubtitle.visibility = View.GONE
                 colorsCategories.value?.let {colorList ->
                     setupColorSpinner(colorList)
-                    adapter.submitList(colorList)
                 }
             }
             is UiState.Failure -> {
-                binding.mainRecycler.visibility = View.GONE
+                binding.container.visibility = View.GONE
                 binding.sampleProgress.visibility = View.GONE
                 binding.errorImage.visibility = View.VISIBLE
                 binding.errorTitle.visibility = View.VISIBLE
@@ -92,7 +90,7 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
                 binding.errorSubtitle.text = colorsCategories.message
             }
             is UiState.Loading -> {
-                binding.mainRecycler.visibility = View.GONE
+                binding.container.visibility = View.GONE
                 binding.sampleProgress.visibility = View.VISIBLE
                 binding.errorImage.visibility = View.GONE
                 binding.errorTitle.visibility = View.GONE
@@ -100,11 +98,6 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
             }
             else -> {}
         }
-    }
-
-    private fun initRecycler() = with(binding.mainRecycler) {
-        layoutManager = LinearLayoutManager(requireContext())
-        adapter = this@MainFragment.adapter
     }
 
     override fun onAttach(context: Context) {
