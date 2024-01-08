@@ -1,16 +1,18 @@
 package com.example.kotlin_yandex_bulb.presenter.ui
 
 import android.content.Context
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.example.kotlin_yandex_bulb.R
 import com.example.kotlin_yandex_bulb.databinding.FragmentMainBinding
 import com.example.kotlin_yandex_bulb.di.ViewModelFactory
 import com.example.kotlin_yandex_bulb.di.appComponent
 import com.example.kotlin_yandex_bulb.presenter.vm.MainViewModel
 import javax.inject.Inject
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(R.layout.fragment_main) {
 
     private val binding: FragmentMainBinding by viewBinding()
 
@@ -21,6 +23,7 @@ class MainFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         context.appComponent.inject(this)
+        Log.d("MainFragment", "On attach method")
         super.onAttach(context)
     }
 }
