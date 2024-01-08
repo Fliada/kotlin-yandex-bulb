@@ -29,12 +29,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecycler()
-        addSampleData()
-    }
-
-    private fun addSampleData() {
-        val data = (0..20).map { "Item #$it" }
-        adapter.submitList(data)
+        viewModel.liveData.observe(viewLifecycleOwner) {
+            adapter.submitList(it)
+        }
+        viewModel.loadData()
     }
 
     private fun initRecycler() = with(binding.mainRecycler) {
