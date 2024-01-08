@@ -3,10 +3,11 @@ package com.example.kotlin_yandex_bulb.presenter.ui
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kotlin_yandex_bulb.data.ColorData
 
 class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
 
-    private val list = mutableListOf<String>()
+    private val list = mutableListOf<ColorData>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val context = parent.context
         val textView = TextView(context)
@@ -17,10 +18,10 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
         list.size
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        holder.textView.text = list[position]
+        holder.textView.text = list[position].color
     }
 
-    fun submitList(list: List<String>) {
+    fun submitList(list: List<ColorData>) {
         with(this.list) {
             clear()
             addAll(list)

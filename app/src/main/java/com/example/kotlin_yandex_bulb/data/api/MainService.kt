@@ -6,5 +6,5 @@ import retrofit2.http.GET
 
 interface MainService {
     @GET("color/")
-    suspend fun getJokesCategories(): Response<List<ColorData>>
+    suspend fun getColors(): Response<List<ColorData>>
 }
