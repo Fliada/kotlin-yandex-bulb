@@ -1,9 +1,11 @@
 package com.example.kotlin_yandex_bulb.presenter.vm
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.kotlin_yandex_bulb.ColorUtils
 import com.example.kotlin_yandex_bulb.UiState
 import com.example.kotlin_yandex_bulb.data.BrightnessData
 import com.example.kotlin_yandex_bulb.data.ColorData
@@ -52,6 +54,10 @@ class MainViewModel @Inject constructor(
     val currentState: LiveData<UiState<Boolean?>>
         get() = _currentState
 
+    private val _backgroundColor = MutableLiveData<String?>()
+    val backgroundColor: MutableLiveData<String?>
+        get() = _backgroundColor
+
 
     fun loadData() {
         viewModelScope.launch {
@@ -66,21 +72,37 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun loadCurrentColor() {
+    fun loadCurrentColor() {
         viewModelScope.launch {
-            val currentColorResult = getCurrentColorUseCase()
-            _currentColor.postValue(currentColorResult.toUiState())
+            try {
+                val currentColorResult = getCurrentColorUseCase()
+                _currentColor.postValue(currentColorResult.toUiState())
+
+                // Дополнительно обновляем цвет фона контейнера при каждом изменении цвета
+                currentColorResult.onSuccess { colorData ->
+                    val backgroundColor = colorData?.id?.let { ColorUtils.getColorHexCode(it) }
+                    Log.d("MainViewModel", backgroundColor.toString())
+                    if (colorData != null) {
+                        Log.d("MainViewModel", colorData.id.toString())
+                    }
+                    _backgroundColor.postValue(backgroundColor)
+                }
+
+            } catch (e: Exception) {
+                // Обработка ошибок
+                _currentColor.postValue(UiState.Failure(e.message ?: "Unknown error"))
+            }
         }
     }
 
-    private fun loadBrightnessLevels() {
+    fun loadBrightnessLevels() {
         viewModelScope.launch {
             val brightnessLevelsResult = getBrightnessLevelsUseCase()
             _brightnessLevels.postValue(brightnessLevelsResult.toUiState())
         }
     }
 
-    private fun loadCurrentBrightness() {
+    fun loadCurrentBrightness() {
         viewModelScope.launch {
             val currentBrightnessResult = getCurrentBrightnessUseCase()
             _currentBrightness.postValue(currentBrightnessResult.toUiState())
@@ -93,22 +115,31 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun loadCurrentState() {
+    fun loadCurrentState() {
         viewModelScope.launch {
             val currentStateResult = getCurrentStateUseCase()
             _currentState.postValue(currentStateResult.toUiState())
         }
     }
 
-    fun turnOn() {
+    fun toggleLight() {
         viewModelScope.launch {
-            turnOnUseCase()
-        }
-    }
+            try {
+                // Выполняем запрос на сервер для переключения состояния лампы
+                if (_currentState.value is UiState.Success && (_currentState.value as UiState.Success<Boolean?>)?.value == true) {
+                    // Если лампа включена, выключаем
+                    turnOffUseCase()
+                } else {
+                    // Если лампа выключена или состояние не определено, включаем
+                    turnOnUseCase()
+                }
 
-    fun turnOff() {
-        viewModelScope.launch {
-            turnOffUseCase()
+                loadCurrentColor()
+
+            } catch (e: Exception) {
+                // Обработка ошибок
+                _currentState.postValue(UiState.Failure(e.message ?: "Unknown error"))
+            }
         }
     }
 }

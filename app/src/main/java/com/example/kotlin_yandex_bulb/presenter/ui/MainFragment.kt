@@ -1,16 +1,20 @@
 package com.example.kotlin_yandex_bulb.presenter.ui
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.SeekBar
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.example.kotlin_yandex_bulb.ColorUtils
 import com.example.kotlin_yandex_bulb.R
 import com.example.kotlin_yandex_bulb.UiState
 import com.example.kotlin_yandex_bulb.data.ColorData
@@ -19,6 +23,8 @@ import com.example.kotlin_yandex_bulb.di.ViewModelFactory
 import com.example.kotlin_yandex_bulb.di.appComponent
 import com.example.kotlin_yandex_bulb.presenter.SliderSelectionListener
 import com.example.kotlin_yandex_bulb.presenter.vm.MainViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<List<ColorData>> {
@@ -37,6 +43,17 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
         viewModel.liveData.observe(viewLifecycleOwner) {
             onDataReceived(it)
         }
+
+        viewModel.backgroundColor.observe(viewLifecycleOwner) { backgroundColor ->
+            backgroundColor?.let {
+                binding.container.setBackgroundColor(Color.parseColor(it))
+            }
+        }
+
+        binding.icBulb.setOnClickListener() {
+            viewModel.toggleLight()
+        }
+
         viewModel.loadData()
     }
 
@@ -56,12 +73,32 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
                 Log.d("MainFragment", "Selected color: ${selectedColor.name}")
 
                 viewModel.setColor(selectedColor.color)
+
+                viewModel.viewModelScope.launch {
+                    delay(500)
+                    viewModel.loadCurrentColor()
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
         }
+
+        binding.brightnessSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                // Обработка изменения яркости
+                viewModel.setBrightnessLevel(progress)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                // Действия при начале отслеживания касания
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                // Действия при завершении отслеживания касания
+            }
+        })
     }
 
     private fun onDataReceived(colorsCategories: UiState<List<ColorData>?>?) {
