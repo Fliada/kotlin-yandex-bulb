@@ -9,12 +9,12 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import android.widget.Spinner
+import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewModelScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.example.kotlin_yandex_bulb.ColorUtils
+import com.example.kotlin_yandex_bulb.ColorDataUtils
 import com.example.kotlin_yandex_bulb.R
 import com.example.kotlin_yandex_bulb.UiState
 import com.example.kotlin_yandex_bulb.data.ColorData
@@ -50,6 +50,12 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
             }
         }
 
+        viewModel.backgroundBrightness.observe(viewLifecycleOwner) { backgroundBrightness ->
+            backgroundBrightness?.let {
+                binding.container.background.alpha = it
+            }
+        }
+
         binding.icBulb.setOnClickListener() {
             viewModel.toggleLight()
         }
@@ -67,7 +73,7 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
 
         colorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                // Обработка выбора цвета
+
                 val selectedColor = colors[position]
 
                 Log.d("MainFragment", "Selected color: ${selectedColor.name}")
@@ -87,16 +93,13 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
 
         binding.brightnessSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                // Обработка изменения яркости
                 viewModel.setBrightnessLevel(progress)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                // Действия при начале отслеживания касания
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                // Действия при завершении отслеживания касания
             }
         })
     }

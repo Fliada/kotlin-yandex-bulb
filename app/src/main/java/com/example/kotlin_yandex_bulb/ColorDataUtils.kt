@@ -1,6 +1,6 @@
 package com.example.kotlin_yandex_bulb
 
-object ColorUtils {
+object ColorDataUtils {
     fun getColorHexCode(id: Int): String {
         return when (id) {
             9 -> "#FFFF00"    // YELLOW
