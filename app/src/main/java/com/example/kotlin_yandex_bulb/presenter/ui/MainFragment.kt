@@ -1,31 +1,26 @@
 package com.example.kotlin_yandex_bulb.presenter.ui
 
-import android.os.Bundle
+import android.content.Context
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.viewbinding.ViewBinding
+import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.example.kotlin_yandex_bulb.R
 import com.example.kotlin_yandex_bulb.databinding.FragmentMainBinding
-import com.example.kotlin_yandex_bulb.di.DaggerAppComponent
+import com.example.kotlin_yandex_bulb.di.ViewModelFactory
+import com.example.kotlin_yandex_bulb.di.appComponent
+import com.example.kotlin_yandex_bulb.presenter.vm.MainViewModel
+import javax.inject.Inject
 
 class MainFragment : Fragment() {
 
     private val binding: FragmentMainBinding by viewBinding()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val component = DaggerAppComponent
-            .create()
-    }
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main, container, false)
+    private val viewModel: MainViewModel by viewModels() { viewModelFactory }
+
+    override fun onAttach(context: Context) {
+        context.appComponent.inject(this)
+        super.onAttach(context)
     }
 }
