@@ -114,11 +114,13 @@ class MainRepositoryImpl @Inject constructor(
             service.turnOn()
         }.fold(
             onSuccess = {
+                Log.d("Lag", "Success")
                 return if (it.isSuccessful)
                     Result.success(Unit)
                 else Result.failure(HttpException(it))
             },
             onFailure = {
+                Log.d("Lag", "Failure")
                 return Result.failure(it)
             }
         )

@@ -58,6 +58,10 @@ class MainViewModel @Inject constructor(
     val currentState: LiveData<UiState<Boolean?>>
         get() = _currentState
 
+    private val _backgroundState = MutableLiveData<Boolean?>()
+    val backgroundState: LiveData<Boolean?>
+        get() = _backgroundState
+
     private val _backgroundColor = MutableLiveData<String?>()
     val backgroundColor: MutableLiveData<String?>
         get() = _backgroundColor
@@ -113,7 +117,7 @@ class MainViewModel @Inject constructor(
                 currentBrightnessResult.onSuccess {
                     if (it != null) {
                         _backgroundBrightness.postValue((it / 100.0 * 255).toInt())
-                        Log.d("MainViewController", "${it / 100.0 * 255}")
+                        Log.d("MainViewModel", "${it / 100.0 * 255}")
                     }
                 }
 
@@ -132,21 +136,36 @@ class MainViewModel @Inject constructor(
 
     fun loadCurrentState() {
         viewModelScope.launch {
-            val currentStateResult = getCurrentStateUseCase()
-            _currentState.postValue(currentStateResult.toUiState())
+            try {
+                val currentStateResult = getCurrentStateUseCase()
+                _currentState.postValue(currentStateResult.toUiState())
+
+                currentStateResult.onSuccess {
+                    if (it != null)
+                        _backgroundState.postValue(it)
+                }
+
+            }
+            catch (e: Exception) {
+                _currentBrightness.postValue(UiState.Failure(e.message ?: "Unknown error"))
+            }
         }
     }
 
     fun toggleLight() {
         viewModelScope.launch {
             try {
-                if (_currentState.value is UiState.Success && (_currentState.value as UiState.Success<Boolean?>)?.value == true) {
+                if (_currentState.value == null || (_currentState.value is UiState.Success && (_currentState.value as UiState.Success<Boolean?>)?.value == true)) {
                     turnOffUseCase()
+                    Log.d("MainViewModel", "Turned off")
                 } else {
+                    Log.d("MainViewModel", _currentState.value.toString())
                     turnOnUseCase()
+                    Log.d("MainViewModel", "Turned on")
+                    Log.d("MainViewModel", _currentState.value.toString())
                 }
 
-                loadCurrentColor()
+                loadCurrentState()
 
             } catch (e: Exception) {
                 _currentState.postValue(UiState.Failure(e.message ?: "Unknown error"))

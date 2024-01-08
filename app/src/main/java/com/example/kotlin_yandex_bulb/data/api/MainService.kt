@@ -35,6 +35,6 @@ interface MainService {
     @POST("state/off")
     suspend fun turnOff(): Response<Unit>
 
-    @POST("state/")
+    @GET("state/")
     suspend fun getCurrentState(): Response<Boolean>
 }

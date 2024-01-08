@@ -47,6 +47,10 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
         viewModel.backgroundColor.observe(viewLifecycleOwner) { backgroundColor ->
             backgroundColor?.let {
                 binding.container.setBackgroundColor(Color.parseColor(it))
+                if (viewModel.backgroundBrightness.value != null)
+                    binding.container.background.alpha = viewModel.backgroundBrightness.value!!
+                else
+                    binding.container.background.alpha = 255
             }
         }
 
@@ -56,7 +60,19 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
             }
         }
 
-        binding.icBulb.setOnClickListener() {
+        viewModel.backgroundState.observe(viewLifecycleOwner) { bgState ->
+            bgState?.let {
+                if (!bgState)
+                    binding.container.background.alpha = 0
+                else
+                    if (viewModel.backgroundBrightness.value != null)
+                        binding.container.background.alpha = viewModel.backgroundBrightness.value!!
+                    else
+                        binding.container.background.alpha = 255
+            }
+        }
+
+        binding.icBulb.setOnClickListener {
             viewModel.toggleLight()
         }
 
