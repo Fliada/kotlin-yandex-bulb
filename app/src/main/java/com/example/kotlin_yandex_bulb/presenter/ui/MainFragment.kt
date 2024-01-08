@@ -30,8 +30,6 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
 
     private val viewModel: MainViewModel by viewModels() { viewModelFactory }
 
-    private val adapter = MainAdapter()
-
     private val colorSpinner: Spinner by lazy { binding.colorSpinner }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,26 +43,23 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
     override fun setupColorSpinner(colors: List<ColorData>) {
         val colorNames = colors.map { it.color }
 
-        // Создание адаптера для Spinner
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, colorNames)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        // Установка адаптера для Spinner
         colorSpinner.adapter = adapter
 
-        // Установка слушателя для обработки выбора пользователя
         colorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 // Обработка выбора цвета
                 val selectedColor = colors[position]
-                // Ваш код для обработки выбора цвета
+
                 Log.d("MainFragment", "Selected color: ${selectedColor.name}")
 
                 viewModel.setColor(selectedColor.color)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Действие при отсутствии выбора
+
             }
         }
     }

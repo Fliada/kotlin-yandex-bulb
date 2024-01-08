@@ -1,0 +1,14 @@
+package com.example.kotlin_yandex_bulb.domain
+
+import com.example.kotlin_yandex_bulb.data.ColorData
+import com.example.kotlin_yandex_bulb.data.repository.MainRepository
+import javax.inject.Inject
+
+class GetCurrentColorUseCaseImpl @Inject constructor(
+    private val repository: MainRepository,
+) : GetCurrentColorUseCase {
+
+    override suspend fun invoke(): Result<ColorData?> {
+        return repository.getCurrentColor()
+    }
+}
