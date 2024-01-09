@@ -48,7 +48,7 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
             backgroundColor?.let {
                 binding.container.setBackgroundColor(Color.parseColor(it))
                 if (viewModel.backgroundBrightness.value != null)
-                    binding.container.background.alpha = viewModel.backgroundBrightness.value!!
+                    binding.container.background.alpha = viewModel. backgroundBrightness.value!!
                 else
                     binding.container.background.alpha = 255
             }
@@ -74,6 +74,16 @@ class MainFragment : Fragment(R.layout.fragment_main), SliderSelectionListener<L
 
         binding.icBulb.setOnClickListener {
             viewModel.toggleLight()
+
+            val newIconResource = if (viewModel.backgroundState.value == true) {
+                R.drawable.ic_bulb_off
+            } else {
+
+                R.drawable.ic_bulb_on
+
+            }
+
+            binding.icBulb.setImageResource(newIconResource)
         }
 
         viewModel.loadData()
